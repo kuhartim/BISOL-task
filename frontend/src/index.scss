@@ -1,3 +1,9 @@
+$theme-colors: (
+  "primary": #f15b25,
+);
+
+@import "bootstrap/scss/bootstrap";
+
 * {
   margin: 0;
   padding: 0;
@@ -13,9 +19,4 @@ body {
   font-weight: 400;
   color: #000;
   background-color: #fff;
-}
-
-:root {
-  --bs-primary: #f15b25; /* Replace with your primary color */
-  --bs-secondary: #000000; /* Replace with your secondary color */
 }
