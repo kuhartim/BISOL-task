@@ -1,7 +1,18 @@
 import sqlite3
 import pandas as pd
+import os
+from passlib.context import CryptContext
+from datetime import datetime
 
-DATABASE_FILE = "../data.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATABASE_FILE = os.path.join(BASE_DIR, "..\data.db")
+DATA_FILE = os.path.join(BASE_DIR, "data.csv")
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
 
 
 def initialize_db():
@@ -16,9 +27,10 @@ def initialize_db():
     """)
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS customers (
+        CREATE TABLE IF NOT EXISTS users (
             user_id TEXT PRIMARY KEY,
-            name TEXT NOT NULL        
+            username TEXT NOT NULL,
+            hashed_password TEXT NOT NULL    
         );
     """)
 
@@ -30,7 +42,7 @@ def initialize_db():
             prod TEXT NOT NULL,
             PRIMARY KEY (price_timestamp, user_id),
             FOREIGN KEY (price_timestamp) REFERENCES energy_prices(timestamp_utc),
-            FOREIGN KEY (user_id) REFERENCES customers(user_id)
+            FOREIGN KEY (user_id) REFERENCES users(user_id)
         );
     """)
 
@@ -39,7 +51,7 @@ def initialize_db():
 
 
 def load_csv_into_db():
-    df = pd.read_csv("data.csv", dtype=str)
+    df = pd.read_csv(DATA_FILE, dtype=str)
 
     conn = sqlite3.connect(DATABASE_FILE)
     cursor = conn.cursor()
@@ -51,6 +63,9 @@ def load_csv_into_db():
         timestamp_utc = row["timestamp_utc"]
         price = row["SIPX_EUR_kWh"]
 
+        # Convert timestamp to ISO 8601 format
+        timestamp_utc = datetime.fromisoformat(timestamp_utc).isoformat()
+
         cursor.execute("""
             INSERT OR IGNORE INTO energy_prices (timestamp_utc, price)
             VALUES (?, ?)
@@ -60,10 +75,17 @@ def load_csv_into_db():
             if "_cons_kWh" in col or "_prod_kWh" in col:
                 customer_id = col.split("_")[0]
 
+                # Check if user already exists
                 cursor.execute("""
-                    INSERT OR IGNORE INTO customers (user_id, name)
-                    VALUES (?, ?)
-                """, (customer_id, f"Customer {customer_id}"))
+                    SELECT 1 FROM users WHERE user_id = ?
+                """, (customer_id,))
+                user_exists = cursor.fetchone()
+
+                if not user_exists:
+                    cursor.execute("""
+                        INSERT INTO users (user_id, username, hashed_password)
+                        VALUES (?, ?, ?)
+                    """, (customer_id, customer_id, hash_password("password")))
 
                 # Initialize the dictionary if data for the timestamp is not present
                 if timestamp_utc not in customer_data:

@@ -1,2 +1,5 @@
 fastapi[standard]
 pandas
+passlib[bcrypt]
+python-jose
+bcrypt
