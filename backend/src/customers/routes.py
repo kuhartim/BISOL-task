@@ -2,20 +2,36 @@ from typing import List, Optional
 from datetime import datetime
 from decimal import Decimal
 from fastapi import APIRouter, HTTPException, Depends
-from .models import Customer
+from pydantic import BaseModel, Field
 from ..utils import get_db_connection
 from ..auth.utils import get_current_username
 from sqlite3 import DatabaseError
+from .models import Customer, UserData
 
 router = APIRouter()
 
 
-@router.get("/", response_model=List[Customer], summary="Get All Customers with Aggregated Usage and Profit/Loss")
-def get_customers():
-    """
+@router.get(
+    "/",
+    response_model=List[Customer],
+    summary="Get All Customers with Aggregated Usage and Profit/Loss",
+    description="""
+    **Deprecated**: This endpoint is no longer in use in production and was only used for database testing.
+
     Returns a list of all customers with their total consumption (`total_cons_kwh`),
     total production (`total_prod_kwh`), combined total (`combined_total`), and
-    total profit/loss (`total_profit_loss`) across all timestamps.
+    total profit/loss (`total_profit_loss_eur`) across all timestamps.
+    All values are returned as strings to preserve exact precision.
+    """,
+    deprecated=True  # Marks the endpoint as deprecated in OpenAPI
+)
+def get_customers():
+    """
+    **Deprecated**: This endpoint is no longer in use in production and was only used for database testing.
+
+    Returns a list of all customers with their total consumption (`total_cons_kwh`),
+    total production (`total_prod_kwh`), combined total (`combined_total`), and
+    total profit/loss (`total_profit_loss_eur`) across all timestamps.
     All values are returned as strings to preserve exact precision.
     """
     try:
@@ -72,19 +88,19 @@ def get_customers():
 
     result = []
     for data in customer_data.values():
-        result.append({
-            "user_id": data["user_id"],
-            "username": data["username"],
-            "total_cons_kwh": str(data["total_cons_kwh"]),
-            "total_prod_kwh": str(data["total_prod_kwh"]),
-            "combined_total": str(data["combined_total"]),
-            "total_profit_loss_eur": str(data["total_profit_loss"]),
-        })
+        result.append(Customer(
+            user_id=data["user_id"],
+            username=data["username"],
+            total_cons_kwh=str(data["total_cons_kwh"]),
+            total_prod_kwh=str(data["total_prod_kwh"]),
+            combined_total=str(data["combined_total"]),
+            total_profit_loss_eur=str(data["total_profit_loss"]),
+        ))
 
     return result
 
 
-@router.get("/data", summary="Get User Data")
+@router.get("/data", response_model=List[UserData], summary="Get User Data")
 def get_user_data(
     current_username: str = Depends(get_current_username),
     from_timestamp: Optional[datetime] = None,
@@ -93,10 +109,6 @@ def get_user_data(
     """
     Returns the data of the currently authenticated user.
     """
-
-    print(from_timestamp, to_timestamp, current_username)
-
-    rows = []
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -137,5 +149,4 @@ def get_user_data(
         raise HTTPException(
             status_code=404, detail="No data found for the user")
 
-    # return list of dictionaries
-    return rows
+    return [UserData(**row) for row in rows]
