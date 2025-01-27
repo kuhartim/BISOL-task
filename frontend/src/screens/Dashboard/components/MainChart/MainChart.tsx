@@ -65,7 +65,7 @@ const MainChart = ({
       hoverBackgroundColor: "rgba(199,75,30, 1)",
       borderRadius: { topLeft: 10, topRight: 10 },
       yAxisID: "y",
-      hidden: !cons, // Hide if cons is false
+      hidden: !cons,
     },
     {
       type: "bar" as const,
@@ -75,7 +75,7 @@ const MainChart = ({
       backgroundColor: "rgba(150,6,112, 1)",
       borderRadius: { topLeft: 10, topRight: 10 },
       yAxisID: "y",
-      hidden: !prod, // Hide if prod is false
+      hidden: !prod,
     },
     {
       type: "line" as const,
@@ -86,7 +86,7 @@ const MainChart = ({
       borderWidth: 2,
       fill: false,
       yAxisID: "y2",
-      hidden: !price, // Hide if price is false
+      hidden: !price,
     },
   ];
 
@@ -108,7 +108,7 @@ const MainChart = ({
         position: "bottom",
         labels: {
           font: {
-            family: "Inter", // Apply Inter font to legend labels
+            family: "Inter",
             size: window.innerWidth < 768 ? 12 : 14, // Smaller font on mobile
           },
         },
@@ -117,7 +117,7 @@ const MainChart = ({
         display: true,
         text: "Poraba energije, proizvodnja energije in cena",
         font: {
-          family: "Inter", // Apply Inter font to title
+          family: "Inter",
           size: window.innerWidth < 768 ? 14 : 16, // Smaller font on mobile
         },
       },
@@ -143,8 +143,8 @@ const MainChart = ({
 
               // Add euro value for cons and prod datasets
               if (label === "Poraba" || label === "Proizvodnja") {
-                const price = priceData[context.dataIndex]; // Get the price for the current index
-                const euroValue = value * price; // Calculate the euro value
+                const price = priceData[context.dataIndex];
+                const euroValue = value * price;
                 tooltipText += ` (${euroValue.toFixed(2)} €)`;
               }
 
@@ -167,7 +167,7 @@ const MainChart = ({
           display: true,
           text: "Poraba / Proizvodnja (kWh)",
           font: {
-            family: "Inter", // Apply Inter font to axis title
+            family: "Inter",
             size: window.innerWidth < 768 ? 12 : 14, // Smaller font on mobile
           },
         },
@@ -181,7 +181,7 @@ const MainChart = ({
           display: true,
           text: "Cena (€)",
           font: {
-            family: "Inter", // Apply Inter font to axis title
+            family: "Inter",
             size: window.innerWidth < 768 ? 12 : 14, // Smaller font on mobile
           },
         },

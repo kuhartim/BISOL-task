@@ -1,4 +1,3 @@
-// filepath: /C:/Development/BISOL/frontend/src/screens/Dashboard/Dashboard.tsx
 import React, { useState, useEffect } from "react";
 import MainChart from "./components/MainChart/MainChart";
 import useData from "./hooks/useData/useData";

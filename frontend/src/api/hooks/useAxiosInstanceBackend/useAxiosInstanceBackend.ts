@@ -35,7 +35,6 @@ const useAxiosInstanceBackend = () => {
       }
     );
 
-    // Cleanup function to remove the interceptors when the component unmounts or accessToken changes
     return () => {
       axiosBackend.interceptors.request.eject(requestInterceptor);
       axiosBackend.interceptors.response.eject(responseInterceptor);
