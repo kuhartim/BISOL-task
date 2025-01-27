@@ -41,6 +41,7 @@ def login(user: UserLogin):
         return {"access_token": access_token, "token_type": "bearer"}
 
     except Exception as e:
+        print(e)
         raise HTTPException(
             status_code=500, detail="An unexpected error occurred during login.")
 

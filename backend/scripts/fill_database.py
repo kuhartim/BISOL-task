@@ -5,7 +5,7 @@ from passlib.context import CryptContext
 from datetime import datetime
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATABASE_FILE = os.path.join(BASE_DIR, "..\data.db")
+DATABASE_FILE = os.path.join(BASE_DIR, "../data.db")
 DATA_FILE = os.path.join(BASE_DIR, "data.csv")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
