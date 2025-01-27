@@ -1,11 +1,48 @@
-import axios from 'axios'
+import axios from "axios";
+import { useAtomValue } from "jotai";
+import { useEffect } from "react";
+import { accessTokenAtom } from "../../../features/auth/atoms/auth.atoms";
+import useLogout from "../../../features/auth/hooks/useLogout/useLogout";
 
 export const axiosBackend = axios.create({
-  headers: { 'Content-Type': 'application/json' }
-})
+  headers: { "Content-Type": "application/json" },
+});
 
 const useAxiosInstanceBackend = () => {
-  return axiosBackend
-}
+  const accessToken = useAtomValue(accessTokenAtom);
+  const { logout } = useLogout();
 
-export default useAxiosInstanceBackend
+  useEffect(() => {
+    const requestInterceptor = axiosBackend.interceptors.request.use(
+      (config) => {
+        if (accessToken) {
+          config.headers.Authorization = `Bearer ${accessToken}`;
+        }
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+
+    const responseInterceptor = axiosBackend.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response && error.response.status === 403) {
+          logout();
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    // Cleanup function to remove the interceptors when the component unmounts or accessToken changes
+    return () => {
+      axiosBackend.interceptors.request.eject(requestInterceptor);
+      axiosBackend.interceptors.response.eject(responseInterceptor);
+    };
+  }, [accessToken, logout]);
+
+  return axiosBackend;
+};
+
+export default useAxiosInstanceBackend;

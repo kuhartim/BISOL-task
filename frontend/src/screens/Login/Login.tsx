@@ -57,7 +57,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex-grow-1 d-flex justify-content-center align-items-center">
+    <div className="flex-grow-1 d-flex flex-column justify-content-center align-items-center">
       <form
         className="card p-4 mx-auto w-100"
         style={{ maxWidth: "400px" }}
@@ -109,6 +109,10 @@ const Login = () => {
           )}
         </button>
       </form>
+      <div className="d-flex flex-column mt-4 text-center">
+        <span>Uporabniška imena so: customer00, customer01,...</span>
+        <span>Geslo je za vse enako: password</span>
+      </div>
     </div>
   );
 };

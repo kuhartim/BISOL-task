@@ -16,7 +16,8 @@ const LogoutButton = () => {
       onClick={logout}
       className="btn btn-danger d-flex gap-2 align-items-center"
     >
-      <i className="bi bi-box-arrow-right"></i> Odjava
+      <i className="bi bi-box-arrow-right"></i>
+      <span className="d-none d-md-inline">Odjava</span>
     </button>
   );
 };

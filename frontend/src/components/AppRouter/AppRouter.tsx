@@ -4,6 +4,7 @@ import OnlyWithoutAuthRoute from "./components/OnlyWithoutAuthRoute/OnlyWithoutA
 import RequireAuthRoute from "./components/RequireAuthRoute/RequireAuthRoute";
 import Login from "../../screens/Login/Login";
 import Layout from "../Layout/Layout";
+import Dashboard from "../../screens/Dashboard/Dashboard";
 
 const AppRouter: React.FC = () => {
   return (
@@ -20,7 +21,11 @@ const AppRouter: React.FC = () => {
 
         <Route
           path="/"
-          element={<RequireAuthRoute>DASHBOARD</RequireAuthRoute>}
+          element={
+            <RequireAuthRoute>
+              <Dashboard />
+            </RequireAuthRoute>
+          }
         />
       </Route>
     </Routes>
